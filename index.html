@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Editor de Fotos Full HD Avançado</title>
+<style>
+  body {
+      font-family: Arial, sans-serif;
+          background: #121212;
+              color: #fff;
+                  display: flex;
+                      flex-direction: column;
+                          align-items: center;
+                              padding: 20px;
+                                }
+                                  h1 {
+                                      margin-bottom: 20px;
+                                        }
+                                          canvas {
+                                              border: 2px solid #fff;
+                                                  margin-bottom: 20px;
+                                                      max-width: 100%;
+                                                        }
+                                                          .controls, .text-controls {
+                                                              display: flex;
+                                                                  flex-wrap: wrap;
+                                                                      justify-content: center;
+                                                                          gap: 10px;
+                                                                              margin-bottom: 10px;
+                                                                                }
+                                                                                  button, input[type="range"], input[type="text"] {
+                                                                                      padding: 10px;
+                                                                                          border-radius: 8px;
+                                                                                              border: none;
+                                                                                                }
+                                                                                                  button {
+                                                                                                      background: #ff6600;
+                                                                                                          color: #fff;
+                                                                                                              cursor: pointer;
+                                                                                                                }
+                                                                                                                  button:hover {
+                                                                                                                      background: #ff3300;
+                                                                                                                        }
+                                                                                                                        </style>
+                                                                                                                        </head>
+                                                                                                                        <body>
+
+                                                                                                                        <h1>Editor de Fotos Full HD Avançado</h1>
+                                                                                                                        <input type="file" id="upload" accept="image/*"><br>
+                                                                                                                        <canvas id="canvas" width="1920" height="1080"></canvas>
+
+                                                                                                                        <div class="controls">
+                                                                                                                          <label>Brilho <input type="range" id="brightness" min="0" max="200" value="100"></label>
+                                                                                                                            <label>Contraste <input type="range" id="contrast" min="0" max="200" value="100"></label>
+                                                                                                                              <label>Saturação <input type="range" id="saturation" min="0" max="200" value="100"></label>
+                                                                                                                                <label>Cinza <input type="range" id="grayscale" min="0" max="100" value="0"></label>
+                                                                                                                                  <button id="rotateLeft">↺ Girar Esquerda</button>
+                                                                                                                                    <button id="rotateRight">↻ Girar Direita</button>
+                                                                                                                                      <button id="download">Salvar</button>
+                                                                                                                                      </div>
+
+                                                                                                                                      <div class="text-controls">
+                                                                                                                                        <input type="text" id="textInput" placeholder="Digite seu texto">
+                                                                                                                                          <button id="addText">Adicionar Texto</button>
+                                                                                                                                          </div>
+
+                                                                                                                                          <script>
+                                                                                                                                          const upload = document.getElementById('upload');
+                                                                                                                                          const canvas = document.getElementById('canvas');
+                                                                                                                                          const ctx = canvas.getContext('2d');
+
+                                                                                                                                          let img = new Image();
+                                                                                                                                          let angle = 0; // ângulo de rotação
+
+                                                                                                                                          // Função para desenhar a imagem centralizada e redimensionada mantendo proporção
+                                                                                                                                          function drawImage() {
+                                                                                                                                            const canvasWidth = canvas.width;
+                                                                                                                                              const canvasHeight = canvas.height;
+                                                                                                                                                const imgRatio = img.width / img.height;
+                                                                                                                                                  const canvasRatio = canvasWidth / canvasHeight;
+                                                                                                                                                    let drawWidth, drawHeight, offsetX, offsetY;
+
+                                                                                                                                                      if (imgRatio > canvasRatio) {
+                                                                                                                                                          drawWidth = canvasWidth;
+                                                                                                                                                              drawHeight = canvasWidth / imgRatio;
+                                                                                                                                                                  offsetX = 0;
+                                                                                                                                                                      offsetY = (canvasHeight - drawHeight) / 2;
+                                                                                                                                                                        } else {
+                                                                                                                                                                            drawHeight = canvasHeight;
+                                                                                                                                                                                drawWidth = canvasHeight * imgRatio;
+                                                                                                                                                                                    offsetX = (canvasWidth - drawWidth) / 2;
+                                                                                                                                                                                        offsetY = 0;
+                                                                                                                                                                                          }
+
+                                                                                                                                                                                            ctx.save();
+                                                                                                                                                                                              ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+                                                                                                                                                                                                ctx.translate(canvasWidth/2, canvasHeight/2);
+                                                                                                                                                                                                  ctx.rotate(angle * Math.PI / 180);
+                                                                                                                                                                                                    ctx.filter = `
+                                                                                                                                                                                                        brightness(${document.getElementById('brightness').value}%)
+                                                                                                                                                                                                            contrast(${document.getElementById('contrast').value}%)
+                                                                                                                                                                                                                saturate(${document.getElementById('saturation').value}%)
+                                                                                                                                                                                                                    grayscale(${document.getElementById('grayscale').value}%)
+                                                                                                                                                                                                                      `;
+                                                                                                                                                                                                                        ctx.drawImage(img, -drawWidth/2, -drawHeight/2, drawWidth, drawHeight);
+                                                                                                                                                                                                                          ctx.restore();
+                                                                                                                                                                                                                          }
+
+                                                                                                                                                                                                                          // Upload da imagem
+                                                                                                                                                                                                                          upload.addEventListener('change', (e) => {
+                                                                                                                                                                                                                            const file = e.target.files[0];
+                                                                                                                                                                                                                              const reader = new FileReader();
+                                                                                                                                                                                                                                reader.onload = function(event) {
+                                                                                                                                                                                                                                    img.onload = () => drawImage();
+                                                                                                                                                                                                                                        img.src = event.target.result;
+                                                                                                                                                                                                                                          }
+                                                                                                                                                                                                                                            reader.readAsDataURL(file);
+                                                                                                                                                                                                                                            });
+
+                                                                                                                                                                                                                                            // Filtros
+                                                                                                                                                                                                                                            ['brightness','contrast','saturation','grayscale'].forEach(id => {
+                                                                                                                                                                                                                                              document.getElementById(id).addEventListener('input', drawImage);
+                                                                                                                                                                                                                                              });
+
+                                                                                                                                                                                                                                              // Rotacionar
+                                                                                                                                                                                                                                              document.getElementById('rotateLeft').addEventListener('click', () => {
+                                                                                                                                                                                                                                                angle -= 90;
+                                                                                                                                                                                                                                                  drawImage();
+                                                                                                                                                                                                                                                  });
+                                                                                                                                                                                                                                                  document.getElementById('rotateRight').addEventListener('click', () => {
+                                                                                                                                                                                                                                                    angle += 90;
+                                                                                                                                                                                                                                                      drawImage();
+                                                                                                                                                                                                                                                      });
+
+                                                                                                                                                                                                                                                      // Adicionar texto
+                                                                                                                                                                                                                                                      document.getElementById('addText').addEventListener('click', () => {
+                                                                                                                                                                                                                                                        const text = document.getElementById('textInput').value;
+                                                                                                                                                                                                                                                          if(text){
+                                                                                                                                                                                                                                                              ctx.save();
+                                                                                                                                                                                                                                                                  ctx.font = "60px Arial";
+                                                                                                                                                                                                                                                                      ctx.fillStyle = "white";
+                                                                                                                                                                                                                                                                          ctx.textAlign = "center";
+                                                                                                                                                                                                                                                                              ctx.fillText(text, canvas.width/2, canvas.height/2);
+                                                                                                                                                                                                                                                                                  ctx.restore();
+                                                                                                                                                                                                                                                                                    }
+                                                                                                                                                                                                                                                                                    });
+
+                                                                                                                                                                                                                                                                                    // Salvar imagem
+                                                                                                                                                                                                                                                                                    document.getElementById('download').addEventListener('click', () => {
+                                                                                                                                                                                                                                                                                      const link = document.createElement('a');
+                                                                                                                                                                                                                                                                                        link.download = 'imagem-fullhd-avancada.png';
+                                                                                                                                                                                                                                                                                          link.href = canvas.toDataURL('image/png');
+                                                                                                                                                                                                                                                                                            link.click();
+                                                                                                                                                                                                                                                                                            });
+                                                                                                                                                                                                                                                                                            </script>
+
+                                                                                                                                                                                                                                                                                            </body>
+                                                                                                                                                                                                                                                                                            </html>
