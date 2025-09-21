@@ -2,106 +2,143 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <title>Misturador de Emojis</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jogo da Velha</title>
   <style>
-    body { font-family: Arial, sans-serif; text-align: center; background: #f4f4f9; }
-    h1 { margin: 20px; }
-    input { font-size: 30px; width: 60px; text-align: center; }
-    button { font-size: 18px; margin: 10px; padding: 10px 20px; cursor: pointer; }
-    .caixa { margin-top: 20px; }
-    .emoji { font-size: 80px; margin: 10px; display: inline-block; }
-    canvas { margin-top: 20px; border: 2px solid #ddd; border-radius: 10px; }
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background: #f4f6f9;
+      font-family: Arial, sans-serif;
+    }
+
+    .container {
+      text-align: center;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .board {
+      display: grid;
+      grid-template-columns: repeat(3, 100px);
+      grid-template-rows: repeat(3, 100px);
+      gap: 5px;
+      justify-content: center;
+    }
+
+    .cell {
+      width: 100px;
+      height: 100px;
+      background: #fff;
+      border: 2px solid #333;
+      font-size: 2.5rem;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .cell:hover {
+      background: #e6e6e6;
+    }
+
+    .winner {
+      margin-top: 20px;
+      font-size: 1.3rem;
+      color: green;
+      font-weight: bold;
+    }
+
+    button {
+      margin-top: 15px;
+      padding: 10px 20px;
+      font-size: 1rem;
+      background: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #45a049;
+    }
   </style>
 </head>
 <body>
-  <h1>🔀 Misturador de Emojis</h1>
-  <input type="text" id="emoji1" maxlength="2" placeholder="😀">
-  <input type="text" id="emoji2" maxlength="2" placeholder="😂">
-  <button onclick="misturar()">Misturar</button>
-  <button onclick="baixar()">Baixar</button>
-
-  <div class="caixa" id="resultado"></div>
-  <canvas id="canvas" width="300" height="150"></canvas>
+  <div class="container">
+    <h1>Jogo da Velha</h1>
+    <div class="board" id="board"></div>
+    <div class="winner" id="winner"></div>
+    <button onclick="resetGame()">Reiniciar</button>
+  </div>
 
   <script>
-    function misturar() {
-      const e1 = document.getElementById("emoji1").value || "😀";
-      const e2 = document.getElementById("emoji2").value || "😂";
-      const res = document.getElementById("resultado");
-      res.innerHTML = `
-        <div class="emoji">${e1 + e2}</div>
-        <div class="emoji">${e2 + e1}</div>
-        <div class="emoji">${e1}${e1}${e2}</div>
-        <div class="emoji">${e1}💖${e2}</div>
-      `;
-      desenharCanvas(e1, e2);
+    const boardElement = document.getElementById('board');
+    const winnerElement = document.getElementById('winner');
+    let currentPlayer = "X";
+    let board = ["", "", "", "", "", "", "", "", ""];
+
+    // Criar células
+    function createBoard() {
+      boardElement.innerHTML = "";
+      board.forEach((cell, index) => {
+        const cellElement = document.createElement("div");
+        cellElement.classList.add("cell");
+        cellElement.textContent = cell;
+        cellElement.addEventListener("click", () => makeMove(index));
+        boardElement.appendChild(cellElement);
+      });
     }
 
-    function desenharCanvas(e1, e2) {
-      const canvas = document.getElementById("canvas");
-      const ctx = canvas.getContext("2d");
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.font = "80px serif";
-      ctx.fillText(e1, 60, 90);
-      ctx.fillText(e2, 160, 90);
+    // Jogada
+    function makeMove(index) {
+      if (board[index] === "" && !checkWinner()) {
+        board[index] = currentPlayer;
+        currentPlayer = currentPlayer === "X" ? "O" : "X";
+        createBoard();
+        checkWinner();
+      }
     }
 
-    function baixar() {
-      const canvas = document.getElementById("canvas");
-      const link = document.createElement("a");
-      link.download = "emoji-misturado.png";
-      link.href = canvas.toDataURL();
-      link.click();
+    // Verificar vencedor
+    function checkWinner() {
+      const winPatterns = [
+        [0,1,2], [3,4,5], [6,7,8], // linhas
+        [0,3,6], [1,4,7], [2,5,8], // colunas
+        [0,4,8], [2,4,6]           // diagonais
+      ];
+
+      for (let pattern of winPatterns) {
+        const [a, b, c] = pattern;
+        if (board[a] && board[a] === board[b] && board[a] === board[c]) {
+          winnerElement.textContent = `Jogador ${board[a]} venceu!`;
+          return true;
+        }
+      }
+
+      if (!board.includes("")) {
+        winnerElement.textContent = "Empate!";
+        return true;
+      }
+      return false;
     }
+
+    // Reiniciar jogo
+    function resetGame() {
+      board = ["", "", "", "", "", "", "", "", ""];
+      currentPlayer = "X";
+      winnerElement.textContent = "";
+      createBoard();
+    }
+
+    createBoard();
   </script>
 </body>
-</html>                                                                                                                                                                                                                          // Upload da imagem
-                                                                                                                                                                                                                          upload.addEventListener('change', (e) => {
-                                                                                                                                                                                                                            const file = e.target.files[0];
-                                                                                                                                                                                                                              const reader = new FileReader();
-                                                                                                                                                                                                                                reader.onload = function(event) {
-                                                                                                                                                                                                                                    img.onload = () => drawImage();
-                                                                                                                                                                                                                                        img.src = event.target.result;
-                                                                                                                                                                                                                                          }
-                                                                                                                                                                                                                                            reader.readAsDataURL(file);
-                                                                                                                                                                                                                                            });
-
-                                                                                                                                                                                                                                            // Filtros
-                                                                                                                                                                                                                                            ['brightness','contrast','saturation','grayscale'].forEach(id => {
-                                                                                                                                                                                                                                              document.getElementById(id).addEventListener('input', drawImage);
-                                                                                                                                                                                                                                              });
-
-                                                                                                                                                                                                                                              // Rotacionar
-                                                                                                                                                                                                                                              document.getElementById('rotateLeft').addEventListener('click', () => {
-                                                                                                                                                                                                                                                angle -= 90;
-                                                                                                                                                                                                                                                  drawImage();
-                                                                                                                                                                                                                                                  });
-                                                                                                                                                                                                                                                  document.getElementById('rotateRight').addEventListener('click', () => {
-                                                                                                                                                                                                                                                    angle += 90;
-                                                                                                                                                                                                                                                      drawImage();
-                                                                                                                                                                                                                                                      });
-
-                                                                                                                                                                                                                                                      // Adicionar texto
-                                                                                                                                                                                                                                                      document.getElementById('addText').addEventListener('click', () => {
-                                                                                                                                                                                                                                                        const text = document.getElementById('textInput').value;
-                                                                                                                                                                                                                                                          if(text){
-                                                                                                                                                                                                                                                              ctx.save();
-                                                                                                                                                                                                                                                                  ctx.font = "60px Arial";
-                                                                                                                                                                                                                                                                      ctx.fillStyle = "white";
-                                                                                                                                                                                                                                                                          ctx.textAlign = "center";
-                                                                                                                                                                                                                                                                              ctx.fillText(text, canvas.width/2, canvas.height/2);
-                                                                                                                                                                                                                                                                                  ctx.restore();
-                                                                                                                                                                                                                                                                                    }
-                                                                                                                                                                                                                                                                                    });
-
-                                                                                                                                                                                                                                                                                    // Salvar imagem
-                                                                                                                                                                                                                                                                                    document.getElementById('download').addEventListener('click', () => {
-                                                                                                                                                                                                                                                                                      const link = document.createElement('a');
-                                                                                                                                                                                                                                                                                        link.download = 'imagem-fullhd-avancada.png';
-                                                                                                                                                                                                                                                                                          link.href = canvas.toDataURL('image/png');
-                                                                                                                                                                                                                                                                                            link.click();
-                                                                                                                                                                                                                                                                                            });
-                                                                                                                                                                                                                                                                                            </script>
-
-                                                                                                                                                                                                                                                                                            </body>
-                                                                                                                                                                                                                                                                                            </html>
+</html>
