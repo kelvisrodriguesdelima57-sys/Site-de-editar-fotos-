@@ -19,22 +19,27 @@
     }
 
     h1 {
-        color: #2196F3; 
+        color: #2196F3;
         margin-bottom: 20px;
         display: flex;
         align-items: center;
+        justify-content: center;
         font-size: 36px;
+        flex-wrap: wrap;
+        text-align: center;
     }
 
     h1 svg {
         margin-right: 10px;
+        margin-bottom: 5px;
     }
 
     input {
-        padding: 10px;
-        margin: 5px;
+        padding: 12px;
+        margin: 10px 0;
         font-size: 18px;
-        width: 350px;
+        width: 100%;
+        max-width: 450px;
         border-radius: 5px;
         border: none;
         outline: none;
@@ -46,15 +51,25 @@
         color: #aaaaaa;
     }
 
+    .buttons {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 10px;
+        width: 100%;
+        max-width: 450px;
+    }
+
     button {
-        padding: 10px 20px;
-        margin: 5px;
+        padding: 12px 20px;
         font-size: 18px;
         border: none;
         border-radius: 5px;
         background-color: #6200ea;
         color: #ffffff;
         cursor: pointer;
+        flex: 1 1 45%;
+        min-width: 120px;
         transition: background-color 0.2s;
     }
 
@@ -65,12 +80,14 @@
     #resultado {
         margin-top: 20px;
         font-size: 22px;
-        max-width: 600px;
+        width: 100%;
+        max-width: 450px;
         background-color: #1e1e1e;
         padding: 15px;
         border-radius: 10px;
         text-align: center;
         font-weight: bold;
+        word-wrap: break-word;
     }
 
     footer {
@@ -80,21 +97,64 @@
         color: #888888;
         text-align: center;
     }
+
+    /* Media queries para telas menores */
+    @media (max-width: 600px) {
+        h1 {
+            font-size: 28px;
+        }
+
+        button {
+            flex: 1 1 100%;
+            font-size: 16px;
+        }
+
+        input {
+            font-size: 16px;
+            padding: 10px;
+        }
+
+        #resultado {
+            font-size: 20px;
+            padding: 12px;
+        }
+    }
+
+    @media (max-width: 400px) {
+        h1 {
+            font-size: 24px;
+        }
+
+        button {
+            font-size: 14px;
+        }
+
+        input {
+            font-size: 14px;
+            padding: 8px;
+        }
+
+        #resultado {
+            font-size: 18px;
+            padding: 10px;
+        }
+    }
 </style>
 </head>
 <body>
 <h1>
-    <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" fill="#2196F3" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="#2196F3" viewBox="0 0 24 24">
         <path d="M6 2h12a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zm0 2v16h12V4H6zm2 2h2v2H8V6zm4 0h2v2h-2V6zm-4 4h2v2H8v-2zm4 0h2v2h-2v-2zm-4 4h2v2H8v-2zm4 0h2v2h-2v-2z"/>
     </svg>
     EquaSmart
 </h1>
 
 <input type="text" id="pergunta" placeholder="Digite sua pergunta de matemática">
-<div>
+<div class="buttons">
     <button onclick="responder()">Calcular</button>
     <button onclick="apagar()">Apagar</button>
 </div>
+
 <div id="resultado">Resultado aparecerá aqui</div>
 
 <footer>Desenvolvido por <span style="color:#2196F3; font-weight:bold;">kel_mod</span></footer>
