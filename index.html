@@ -1,181 +1,145 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sala do Futuro - Login</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #0d0d0d, #1a1a1a);
-            color: #f2f2f2;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            overflow: hidden;
-        }
-
-        .container {
-            background: rgba(20, 20, 20, 0.95);
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6);
-            width: 100%;
-            max-width: 400px;
-            text-align: center;
-        }
-
-        h1 { font-size: 1.8rem; margin-bottom: 20px; color: #00aaff; }
-
-        .input-group { margin-bottom: 15px; text-align: left; }
-        label { display: block; margin-bottom: 5px; font-size: 0.9rem; color: #aaa; }
-
-        input {
-            width: 100%;
-            padding: 12px;
-            border: none;
-            border-radius: 8px;
-            outline: none;
-            font-size: 1rem;
-            background: #2a2a2a;
-            color: #fff;
-        }
-        input:focus { border: 1px solid #00aaff; }
-
-        .btn {
-            width: 100%;
-            padding: 12px;
-            margin-top: 10px;
-            border: none;
-            border-radius: 8px;
-            background: #00aaff;
-            color: #fff;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: 0.3s;
-        }
-        .btn:hover { background: #0088cc; }
-
-        .ad-space {
-            margin: 20px 0;
-            padding: 10px;
-            background: #111;
-            border: 1px dashed #333;
-            border-radius: 10px;
-            color: #555;
-            font-size: 0.9rem;
-        }
-
-        /* Overlay Anti-AdBlock */
-        #adblock-overlay {
-            display: none;
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background: rgba(10, 10, 10, 0.95);
-            z-index: 9999;
-            color: #fff;
-            text-align: center;
-            padding: 50px 20px;
-        }
-        #adblock-overlay h2 { color: #ff4444; margin-bottom: 15px; }
-        #adblock-overlay p { margin-bottom: 20px; }
-        #adblock-overlay button {
-            padding: 12px 20px;
-            border: none;
-            border-radius: 8px;
-            background: #00aaff;
-            color: #fff;
-            cursor: pointer;
-            font-size: 1rem;
-        }
-        #adblock-overlay button:hover { background: #0088cc; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Automação Sala do Futuro</title>
+<style>
+    body { font-family: Arial, sans-serif; background: #111; color: #fff; display: flex; flex-direction: column; align-items: center; padding: 20px; }
+    .container { background: #222; padding: 20px; border-radius: 10px; width: 100%; max-width: 500px; margin-bottom: 20px; }
+    input, button, textarea { width: 100%; padding: 10px; margin: 10px 0; border-radius: 5px; border: none; }
+    input, textarea { background: #333; color: #fff; }
+    button { background: #00aaff; color: #fff; cursor: pointer; }
+    button:hover { background: #0088cc; }
+    .output { background: #111; padding: 10px; border-radius: 5px; margin-top: 10px; max-height: 300px; overflow-y: auto; white-space: pre-wrap; }
+</style>
 </head>
 <body>
-    <!-- Overlay Anti-AdBlock -->
-    <div id="adblock-overlay">
-        <h2>🚫 AdBlock Detectado</h2>
-        <p>Por favor, desative o AdBlock para acessar a Sala do Futuro.</p>
-        <button onclick="location.reload()">Tente novamente</button>
-    </div>
 
-    <!-- Conteúdo principal -->
-    <div class="container">
-        <h1>Login Sala do Futuro</h1>
-        <div class="ad-space">Espaço para anúncios</div>
+<div class="container">
+    <h2>Login Sala do Futuro</h2>
+    <input type="text" id="ra" placeholder="RA">
+    <input type="password" id="senha" placeholder="Senha">
+    <button id="loginBtn">Login</button>
+</div>
 
-        <form id="loginForm">
-            <div class="input-group">
-                <label for="ra">RA</label>
-                <input type="text" id="ra" name="ra" placeholder="Digite seu RA" required>
-            </div>
-            <div class="input-group">
-                <label for="senha">Senha</label>
-                <input type="password" id="senha" name="senha" placeholder="Digite sua senha" required>
-            </div>
-            <button type="submit" class="btn">Entrar</button>
-        </form>
+<div class="container">
+    <h3>Tarefas</h3>
+    <button id="carregarTarefasBtn">Carregar Tarefas</button>
+    <div class="output" id="tarefasOutput"></div>
+</div>
 
-        <div class="ad-space">Outro espaço para anúncios</div>
-    </div>
+<div class="container">
+    <h3>Gerar Respostas Automáticas</h3>
+    <button id="responderTarefasBtn">Gerar respostas via IA</button>
+    <div class="output" id="respostasOutput"></div>
+</div>
 
-    <script>
-        // Anti-AdBlock simples
-        window.addEventListener("load", () => {
-            const testAd = document.createElement("div");
-            testAd.className = "adsbox";
-            testAd.style.height = "1px";
-            document.body.appendChild(testAd);
+<script>
+let token = "";
+let tarefas = [];
 
-            setTimeout(() => {
-                if (testAd.offsetHeight === 0) {
-                    document.getElementById("adblock-overlay").style.display = "block";
-                }
-                testAd.remove();
-            }, 100);
+// Função para login na API
+async function login() {
+    const ra = document.getElementById("ra").value.trim();
+    const senha = document.getElementById("senha").value.trim();
+    if (!ra || !senha) { alert("Preencha RA e senha!"); return; }
+
+    try {
+        const response = await fetch("https://edusp-api.ip.tv:443/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ ra, senha })
         });
+        const data = await response.json();
+        if (data.token) {
+            token = data.token;
+            alert("Login bem-sucedido!");
+        } else {
+            alert("RA ou senha incorretos!");
+        }
+    } catch (e) {
+        console.error(e);
+        alert("Erro ao conectar com o servidor!");
+    }
+}
 
-        // Login integrado com API
-        document.getElementById("loginForm").addEventListener("submit", async function(e) {
-            e.preventDefault();
-            const ra = document.getElementById("ra").value.trim();
-            const senha = document.getElementById("senha").value.trim();
-
-            if (!ra || !senha) {
-                alert("Preencha todos os campos!");
-                return;
-            }
-
-            try {
-                const response = await fetch("https://api.sala-do-futuro.exemplo/login", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ ra, senha })
-                });
-
-                if (!response.ok) {
-                    throw new Error("Falha no login");
-                }
-
-                const data = await response.json();
-                
-                if (data.token) {
-                    alert("✅ Login bem-sucedido!");
-                    // Exemplo: salvar token e redirecionar
-                    localStorage.setItem("token", data.token);
-                    window.location.href = "/painel.html";
-                } else {
-                    alert("❌ RA ou senha incorretos!");
-                }
-            } catch (error) {
-                alert("Erro ao conectar com o servidor!");
-                console.error(error);
-            }
+// Função para carregar tarefas
+async function carregarTarefas() {
+    if (!token) { alert("Faça login primeiro!"); return; }
+    try {
+        const response = await fetch("https://edusp-api.ip.tv:443/tarefas", {
+            method: "GET",
+            headers: { "Authorization": "Bearer " + token }
         });
-    </script>
+        tarefas = await response.json();
+        document.getElementById("tarefasOutput").innerText =
+            tarefas.map((t, i) => `${i+1}. ${t.pergunta}`).join("\n\n");
+    } catch (e) {
+        console.error(e);
+        alert("Erro ao carregar tarefas!");
+    }
+}
+
+// Função para gerar respostas via IA e submeter
+async function responderTarefas() {
+    if (!tarefas.length) { alert("Carregue as tarefas primeiro!"); return; }
+    const respostasDiv = document.getElementById("respostasOutput");
+    respostasDiv.innerText = "Gerando respostas...\n";
+
+    for (let i = 0; i < tarefas.length; i++) {
+        const pergunta = tarefas[i].pergunta;
+        let respostaIA = "";
+
+        // Chamada para API de IA (ChatGPT)
+        try {
+            const response = await fetch("https://api.openai.com/v1/chat/completions", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": "Bearer SUA_CHAVE_OPENAI"
+                },
+                body: JSON.stringify({
+                    model: "gpt-4-mini",
+                    messages: [{ role: "user", content: pergunta }],
+                    temperature: 0
+                })
+            });
+            const data = await response.json();
+            respostaIA = data.choices[0].message.content;
+        } catch (e) {
+            console.error(e);
+            respostaIA = "Erro ao gerar resposta IA";
+        }
+
+        respostasDiv.innerText += `Pergunta ${i+1}: ${pergunta}\nResposta: ${respostaIA}\n\n`;
+
+        // Enviar resposta para a API real
+        try {
+            await fetch("https://edusp-api.ip.tv:443/respostas", {
+                method: "POST",
+                headers: { 
+                    "Content-Type": "application/json",
+                    "Authorization": "Bearer " + token
+                },
+                body: JSON.stringify({
+                    tarefa_id: tarefas[i].id,
+                    resposta: respostaIA
+                })
+            });
+        } catch (e) {
+            console.error(e);
+        }
+    }
+
+    alert("Respostas geradas e enviadas!");
+}
+
+// Event listeners
+document.getElementById("loginBtn").addEventListener("click", login);
+document.getElementById("carregarTarefasBtn").addEventListener("click", carregarTarefas);
+document.getElementById("responderTarefasBtn").addEventListener("click", responderTarefas);
+</script>
+
 </body>
 </html>
