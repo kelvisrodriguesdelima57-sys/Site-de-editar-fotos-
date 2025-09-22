@@ -34,17 +34,45 @@
         margin-bottom: 5px;
     }
 
+    .tipo-selector {
+        padding: 12px;
+        margin: 10px 0 5px 0;
+        font-size: 16px;
+        width: 100%;
+        max-width: 500px;
+        border-radius: 8px;
+        border: none;
+        outline: none;
+        background-color: #2a2a2a;
+        color: #ffffff;
+        box-sizing: border-box;
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
+
+    .tipo-selector:hover {
+        background-color: #3a3a3a;
+    }
+
+    .tipo-selector:focus {
+        background-color: #3a3a3a;
+        box-shadow: 0 0 0 2px #2196F3;
+    }
+
     input {
         padding: 12px;
-        margin: 10px 0;
+        margin: 5px 0 10px 0;
         font-size: 18px;
         width: 100%;
         max-width: 500px;
-        border-radius: 5px;
+        border-radius: 8px;
         border: none;
         outline: none;
         background-color: #1f1f1f;
         color: #ffffff;
+        box-sizing: border-box;
+        -webkit-appearance: none;
+        appearance: none;
     }
 
     input::placeholder {
@@ -57,20 +85,24 @@
         justify-content: center;
         gap: 10px;
         width: 100%;
-        max-width: 450px;
+        max-width: 500px;
+        margin: 0 auto;
     }
 
     button {
         padding: 12px 20px;
         font-size: 18px;
         border: none;
-        border-radius: 5px;
+        border-radius: 8px;
         background-color: #6200ea;
         color: #ffffff;
         cursor: pointer;
         flex: 1 1 45%;
         min-width: 120px;
+        min-height: 44px;
         transition: background-color 0.2s;
+        touch-action: manipulation;
+        -webkit-tap-highlight-color: transparent;
     }
 
     button:hover {
@@ -98,45 +130,134 @@
         text-align: center;
     }
 
-    /* Media queries para telas menores */
-    @media (max-width: 600px) {
+    /* Media queries para melhor responsividade mobile */
+    @media (max-width: 768px) {
+        body {
+            padding: 15px;
+        }
+
         h1 {
-            font-size: 28px;
+            font-size: 30px;
+            margin-bottom: 25px;
+        }
+
+        h1 svg {
+            width: 28px;
+            height: 28px;
+        }
+
+        .tipo-selector {
+            font-size: 16px;
+            padding: 12px;
+            margin: 12px 0 5px 0;
+        }
+
+        input {
+            font-size: 18px;
+            padding: 15px;
+            margin: 5px 0 15px 0;
+        }
+
+        .buttons {
+            gap: 15px;
+            max-width: 100%;
         }
 
         button {
             flex: 1 1 100%;
-            font-size: 16px;
-        }
-
-        input {
-            font-size: 16px;
-            padding: 10px;
+            font-size: 18px;
+            padding: 15px 20px;
+            min-height: 48px; /* Melhor target touch */
         }
 
         #resultado {
             font-size: 20px;
-            padding: 12px;
+            padding: 20px;
+            margin-top: 25px;
         }
     }
 
-    @media (max-width: 400px) {
-        h1 {
-            font-size: 24px;
+    @media (max-width: 480px) {
+        body {
+            padding: 10px;
         }
 
-        button {
-            font-size: 14px;
+        h1 {
+            font-size: 26px;
+            margin-bottom: 20px;
+        }
+
+        h1 svg {
+            width: 24px;
+            height: 24px;
+            margin-right: 8px;
+        }
+
+        .tipo-selector {
+            font-size: 15px;
+            padding: 10px;
+            margin: 10px 0 5px 0;
         }
 
         input {
-            font-size: 14px;
-            padding: 8px;
+            font-size: 16px;
+            padding: 12px;
+            margin: 5px 0 12px 0;
+        }
+
+        .buttons {
+            gap: 12px;
+        }
+
+        button {
+            font-size: 16px;
+            padding: 14px 18px;
+            min-height: 48px;
         }
 
         #resultado {
             font-size: 18px;
+            padding: 15px;
+            margin-top: 20px;
+        }
+
+        footer {
+            font-size: 12px;
+            padding: 15px 5px;
+        }
+    }
+
+    @media (max-width: 320px) {
+        h1 {
+            font-size: 22px;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        h1 svg {
+            margin: 0;
+        }
+
+        .tipo-selector {
+            font-size: 14px;
+            padding: 8px;
+            margin: 8px 0 5px 0;
+        }
+
+        input {
+            font-size: 16px;
             padding: 10px;
+            margin: 5px 0 10px 0;
+        }
+
+        button {
+            font-size: 15px;
+            padding: 12px 16px;
+        }
+
+        #resultado {
+            font-size: 16px;
+            padding: 12px;
         }
     }
 </style>
@@ -149,6 +270,13 @@
     EquaSmart
 </h1>
 
+<select id="tipo" class="tipo-selector">
+    <option value="basico">🔢 Básico</option>
+    <option value="algebra">📐 Álgebra</option>
+    <option value="calculo">∫ Cálculo</option>
+    <option value="geometria">📏 Geometria</option>
+    <option value="estatistica">📊 Estatística</option>
+</select>
 <input type="text" id="pergunta" placeholder="Digite sua pergunta de matemática">
 <div class="buttons">
     <button onclick="responder()">Calcular</button>
@@ -160,33 +288,61 @@
 <footer>Desenvolvido por <span style="color:#2196F3; font-weight:bold;">kel_mod</span></footer>
 
 <script>
+// Atualizar placeholder baseado no tipo selecionado
+function atualizarPlaceholder() {
+    const tipo = document.getElementById('tipo').value;
+    const perguntaInput = document.getElementById('pergunta');
+    
+    const placeholders = {
+        'basico': 'Ex: 15 + 7 * 3, 100 / 4 - 5',
+        'algebra': 'Ex: Resolva 2x + 5 = 13, Simplifique (x+2)(x-3)',
+        'calculo': 'Ex: Derivada de x³ + 2x, Integral de 3x² dx',
+        'geometria': 'Ex: Área do círculo r=5, Volume cubo lado=3',
+        'estatistica': 'Ex: Média de (10,20,30,40), Desvio padrão de (5,7,9)'
+    };
+    
+    perguntaInput.placeholder = placeholders[tipo] || 'Digite sua pergunta de matemática';
+}
+
+// Inicializar placeholder
+document.addEventListener('DOMContentLoaded', function() {
+    atualizarPlaceholder();
+    document.getElementById('tipo').addEventListener('change', atualizarPlaceholder);
+});
+
 async function responder() {
     const pergunta = document.getElementById('pergunta').value;
+    const tipo = document.getElementById('tipo').value;
     const resultadoDiv = document.getElementById('resultado');
+    
+    if (!pergunta.trim()) {
+        resultadoDiv.innerText = "Por favor, digite uma pergunta de matemática";
+        return;
+    }
+    
     resultadoDiv.innerText = "Calculando...";
 
     try {
-        const response = await fetch("https://api.openai.com/v1/chat/completions", {
+        const response = await fetch("/api/calcular", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                "Authorization": "Bearer SUA_CHAVE_API_AQUI"
             },
             body: JSON.stringify({
-                model: "gpt-4o-mini",
-                messages: [
-                    { role: "system", content: "Você é um assistente de matemática que retorna apenas o resultado direto, sem explicações." },
-                    { role: "user", content: pergunta }
-                ],
-                temperature: 0
+                pergunta: pergunta,
+                tipo: tipo
             })
         });
 
         const data = await response.json();
-        const resposta = data.choices[0].message.content;
-        resultadoDiv.innerText = resposta.trim();
+        
+        if (response.ok) {
+            resultadoDiv.innerText = data.resposta;
+        } else {
+            resultadoDiv.innerText = "Erro: " + (data.error || "Erro desconhecido");
+        }
     } catch (error) {
-        resultadoDiv.innerText = "Erro ao conectar com a API: " + error;
+        resultadoDiv.innerText = "Erro ao conectar com o servidor: " + error.message;
     }
 }
 
